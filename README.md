@@ -93,6 +93,8 @@ PYMediaManagement
 - SQLite is the default database, but allow for external database configuration.
 - Follow the project structure and add features incrementally.
 - Use Docker for deployment (to be added later).
+- **Automatically update the README** to reflect changes and progress in the project as new features or updates are implemented.
+- Look for learning opportunities to teach the user FastAPI and asynchronous programming concepts as the project progresses.
 
 ## License
 This project is licensed under the MIT License.
