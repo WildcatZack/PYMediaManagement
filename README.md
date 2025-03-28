@@ -66,27 +66,125 @@ PYMediaManagement
 ├── .env                      # Environment variables
 ```
 
+## Implementation Details
+
+### Database Setup
+- The application uses **SQLite** as the default database, with support for other SQL databases via SQLAlchemy.
+- The database connection is managed using `databases` for async support.
+- The `Task` model is defined with the following fields:
+  - `id`: Primary key (integer).
+  - `title`: Task title (string, required).
+  - `description`: Task description (string, optional).
+  - `completed`: Task completion status (boolean, default: `False`).
+  - `created_at`: Timestamp for when the task was created.
+  - `updated_at`: Timestamp for when the task was last updated.
+
+### CRUD Operations for Task Management
+The following endpoints are available for managing tasks:
+
+1. **Create a Task**  
+   - **Endpoint**: `POST /api/tasks`  
+   - **Request Body**:
+     ```json
+     {
+       "title": "My Task",
+       "description": "This is a test task"
+     }
+     ```
+   - **Response**:
+     ```json
+     {
+       "id": 1,
+       "title": "My Task",
+       "description": "This is a test task",
+       "completed": false
+     }
+     ```
+
+2. **Get All Tasks**  
+   - **Endpoint**: `GET /api/tasks`  
+   - **Response**:
+     ```json
+     [
+       {
+         "id": 1,
+         "title": "My Task",
+         "description": "This is a test task",
+         "completed": false,
+         "created_at": "2025-03-28T12:00:00",
+         "updated_at": "2025-03-28T12:00:00"
+       }
+     ]
+     ```
+
+3. **Get a Single Task by ID**  
+   - **Endpoint**: `GET /api/tasks/{task_id}`  
+   - **Response** (if the task exists):
+     ```json
+     {
+       "id": 1,
+       "title": "My Task",
+       "description": "This is a test task",
+       "completed": false,
+       "created_at": "2025-03-28T12:00:00",
+       "updated_at": "2025-03-28T12:00:00"
+     }
+     ```
+   - **Response** (if the task does not exist):
+     ```json
+     {
+       "detail": "Task not found"
+     }
+     ```
+
+4. **Update a Task**  
+   - **Endpoint**: `PUT /api/tasks/{task_id}`  
+   - **Request Body**:
+     ```json
+     {
+       "title": "Updated Task",
+       "description": "This task has been updated",
+       "completed": true
+     }
+     ```
+   - **Response**:
+     ```json
+     {
+       "id": 1,
+       "title": "Updated Task",
+       "description": "This task has been updated",
+       "completed": true,
+       "created_at": "2025-03-28T12:00:00",
+       "updated_at": "2025-03-28T12:10:00"
+     }
+     ```
+
+5. **Delete a Task**  
+   - **Endpoint**: `DELETE /api/tasks/{task_id}`  
+   - **Response**:
+     ```json
+     {
+       "message": "Task with ID 1 has been deleted"
+     }
+     ```
+
+### Database File
+- The SQLite database file is named `pymediamanagement.db` and is located in the project root directory.
+- Tables are automatically created on application startup.
+
 ## Next Steps
-1. **Add a Router for Modular API Design**:
-   - Create a `routers` directory and add a basic router for task management or file processing.
-
-2. **Set Up the Database**:
-   - Add SQLite integration using `SQLAlchemy` or `Tortoise ORM`.
-   - Create a `database.py` file to manage the connection and schema.
-
-3. **Implement Task Management**:
-   - Add a route to create, view, and manage tasks.
-   - Use a simple in-memory task list for now, and later integrate it with the database.
-
-4. **Improve the Web UI**:
+1. **Improve the Web UI**:
    - Add a navigation bar and a basic layout using Jinja2 templates.
    - Include CSS for styling.
 
-5. **Add Configuration Support**:
+2. **Add Configuration Support**:
    - Use a `.env` file to manage environment variables (e.g., database URL, Plex API key).
 
-6. **Set Up Docker**:
+3. **Set Up Docker**:
    - Create a `Dockerfile` and `docker-compose.yml` for containerized deployment.
+
+4. **Write Unit Tests**:
+   - Add unit tests for the CRUD operations to ensure the application behaves as expected.
 
 ## Notes for Future Chatbots
 - Use FastAPI for the backend and Jinja2 for the frontend.

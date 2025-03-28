@@ -10,3 +10,9 @@ metadata = MetaData()
 
 # Create the async database connection
 database = Database(DATABASE_URL)
+
+# Import models to ensure they are registered with metadata
+from app.models import tasks  # noqa
+
+# Create all tables in the database
+metadata.create_all(bind=engine)
