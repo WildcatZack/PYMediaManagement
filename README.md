@@ -19,33 +19,13 @@ PYMediaManagement is a media management tool designed for users hosting a Plex M
 - macOS Sequoia
 
 ### Installation
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd PYMediaManagement
-   ```
-
-2. Create a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the application:
-   ```bash
-   uvicorn app.main:app --reload
-   ```
-
-5. Open the app in your browser:
-   - Navigate to `http://127.0.0.1:8000`.
+1. Clone the repository: `git clone <repository-url> && cd PYMediaManagement`
+2. Create a virtual environment: `python3 -m venv venv && source venv/bin/activate`
+3. Install dependencies: `pip install -r requirements.txt`
+4. Run the application: `uvicorn app.main:app --reload`
+5. Open the app in your browser: Navigate to `http://127.0.0.1:8000`
 
 ## Project Structure
-```plaintext
 PYMediaManagement
 ├── app
 │   ├── __init__.py
@@ -64,7 +44,6 @@ PYMediaManagement
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # Project documentation
 ├── .env                      # Environment variables
-```
 
 ## Implementation Details
 
@@ -169,7 +148,7 @@ The following endpoints are available for managing tasks:
      ```
 
 ### Database File
-- The SQLite database file is named `pymediamanagement.db` and is located in the project root directory.
+- The SQLite database file is named [pymediamanagement.db](http://_vscodecontentref_/2) and is located in the project root directory.
 - Tables are automatically created on application startup.
 
 ## Next Steps
@@ -178,7 +157,7 @@ The following endpoints are available for managing tasks:
    - Include CSS for styling.
 
 2. **Add Configuration Support**:
-   - Use a `.env` file to manage environment variables (e.g., database URL, Plex API key).
+   - Use a [.env](http://_vscodecontentref_/3) file to manage environment variables (e.g., database URL, Plex API key).
 
 3. **Set Up Docker**:
    - Create a `Dockerfile` and `docker-compose.yml` for containerized deployment.
