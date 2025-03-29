@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from app.routers import tasks, shows, movies, music  # Import the tasks, shows, movies, and music routers
 from app.database import database  # Import the database connection
+import requests
+import yaml  # For parsing custom metadata files
 
 # Initialize the FastAPI app
 app = FastAPI()
@@ -78,14 +80,29 @@ async def edit_show(request: Request, show_id: int):
 
 # Add a POST route to handle form submissions for creating a new show
 @app.post("/shows/new", response_class=HTMLResponse)
-async def create_show(
-    title: str = Form(...),
-    file_path: str = Form(...),
-    season: int = Form(None),
-    episode: int = Form(None),
+async def search_and_add_show(
+    source: str = Form(...),
+    identifier: str = Form(...),
 ):
-    query = "INSERT INTO shows (title, file_path, season, episode) VALUES (:title, :file_path, :season, :episode)"
-    await database.execute(query=query, values={"title": title, "file_path": file_path, "season": season, "episode": episode})
+    # Search for the show based on the selected source
+    if source == "tvdb":
+        show_data = await search_tvdb(identifier)
+    elif source == "custom":
+        show_data = await search_custom_metadata(identifier)
+    else:
+        raise HTTPException(status_code=400, detail="Invalid source selected")
+
+    # If no show data is found, return an error
+    if not show_data:
+        raise HTTPException(status_code=404, detail="Show not found")
+
+    # Add the show to the database
+    query = """
+    INSERT INTO shows (title, file_path, season, episode)
+    VALUES (:title, :file_path, :season, :episode)
+    """
+    await database.execute(query=query, values=show_data)
+
     return RedirectResponse(url="/shows", status_code=303)
 
 # Add a POST route to handle form submissions for editing an existing show
@@ -118,3 +135,32 @@ async def read_music(request: Request):
     query = "SELECT * FROM music"
     music = await database.fetch_all(query=query)
     return templates.TemplateResponse("music.html", {"request": request, "music": music})
+
+# Helper function to search TVDB
+async def search_tvdb(identifier: str):
+    # Replace with actual TVDB API logic
+    response = requests.get(f"https://api.thetvdb.com/search?query={identifier}")
+    if response.status_code == 200:
+        data = response.json()
+        return {
+            "title": data["title"],
+            "file_path": f"/tvdb/{data['id']}",
+            "season": data.get("season", None),
+            "episode": data.get("episode", None),
+        }
+    return None
+
+# Helper function to search custom metadata
+async def search_custom_metadata(file_path: str):
+    # Replace with logic to parse a custom metadata file
+    try:
+        with open(file_path, "r") as file:
+            data = yaml.safe_load(file)
+            return {
+                "title": data["title"],
+                "file_path": file_path,
+                "season": data.get("season", None),
+                "episode": data.get("episode", None),
+            }
+    except Exception:
+        return None
