@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Add Show - PYMediaManagement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Add New Show</h1>
+    <form method="post" action="/shows/new">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="file_path" class="form-label">File Path</label>
+            <input type="text" class="form-control" id="file_path" name="file_path" required>
+        </div>
+        <div class="mb-3">
+            <label for="season" class="form-label">Season</label>
+            <input type="number" class="form-control" id="season" name="season">
+        </div>
+        <div class="mb-3">
+            <label for="episode" class="form-label">Episode</label>
+            <input type="number" class="form-control" id="episode" name="episode">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Show</button>
+        <a href="/shows" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

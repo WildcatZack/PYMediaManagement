@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Form, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from app.routers import tasks, shows, movies, music  # Import the tasks, shows, movies, and music routers
@@ -54,3 +54,67 @@ async def read_tasks(request: Request):
     query = "SELECT * FROM tasks"
     tasks = await database.fetch_all(query=query)
     return templates.TemplateResponse("tasks.html", {"request": request, "tasks": tasks})
+
+# Add a route for shows
+@app.get("/shows", response_class=HTMLResponse)
+async def read_shows(request: Request):
+    query = "SELECT * FROM shows"
+    shows = await database.fetch_all(query=query)
+    return templates.TemplateResponse("shows.html", {"request": request, "shows": shows})
+
+# Add a route for creating a new show
+@app.get("/shows/new", response_class=HTMLResponse)
+async def new_show(request: Request):
+    return templates.TemplateResponse("new_show.html", {"request": request})
+
+# Add a route for editing an existing show
+@app.get("/shows/{show_id}/edit", response_class=HTMLResponse)
+async def edit_show(request: Request, show_id: int):
+    query = "SELECT * FROM shows WHERE id = :id"
+    show = await database.fetch_one(query=query, values={"id": show_id})
+    if not show:
+        raise HTTPException(status_code=404, detail="Show not found")
+    return templates.TemplateResponse("edit_show.html", {"request": request, "show": show})
+
+# Add a POST route to handle form submissions for creating a new show
+@app.post("/shows/new", response_class=HTMLResponse)
+async def create_show(
+    title: str = Form(...),
+    file_path: str = Form(...),
+    season: int = Form(None),
+    episode: int = Form(None),
+):
+    query = "INSERT INTO shows (title, file_path, season, episode) VALUES (:title, :file_path, :season, :episode)"
+    await database.execute(query=query, values={"title": title, "file_path": file_path, "season": season, "episode": episode})
+    return RedirectResponse(url="/shows", status_code=303)
+
+# Add a POST route to handle form submissions for editing an existing show
+@app.post("/shows/{show_id}/edit", response_class=HTMLResponse)
+async def update_show(
+    show_id: int,
+    title: str = Form(...),
+    file_path: str = Form(...),
+    season: int = Form(None),
+    episode: int = Form(None),
+):
+    query = """
+    UPDATE shows
+    SET title = :title, file_path = :file_path, season = :season, episode = :episode
+    WHERE id = :id
+    """
+    await database.execute(query=query, values={"id": show_id, "title": title, "file_path": file_path, "season": season, "episode": episode})
+    return RedirectResponse(url="/shows", status_code=303)
+
+# Add a route for movies
+@app.get("/movies", response_class=HTMLResponse)
+async def read_movies(request: Request):
+    query = "SELECT * FROM movies"
+    movies = await database.fetch_all(query=query)
+    return templates.TemplateResponse("movies.html", {"request": request, "movies": movies})
+
+# Add a route for music
+@app.get("/music", response_class=HTMLResponse)
+async def read_music(request: Request):
+    query = "SELECT * FROM music"
+    music = await database.fetch_all(query=query)
+    return templates.TemplateResponse("music.html", {"request": request, "music": music})
