@@ -12,7 +12,7 @@ metadata = MetaData()
 database = Database(DATABASE_URL)
 
 # Import models to ensure they are registered with metadata
-from app.models import tasks  # noqa
+from app.models import tasks, shows, movies, music  # noqa
 
 # Create all tables in the database
 metadata.create_all(bind=engine)
